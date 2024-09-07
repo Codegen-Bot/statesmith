@@ -2,4 +2,5 @@
 **/obj/**/*
 **/.idea/**/*
 *.wasm
+*.sln.DotSettings.user
 
