@@ -26,6 +26,7 @@ public class GraphQLError
 [JsonSerializable(typeof(FileKind))]
 [JsonSerializable(typeof(FileVersion))]
 [JsonSerializable(typeof(LogSeverity))]
+[JsonSerializable(typeof(StateSmithLanguage))]
 [JsonSerializable(typeof(CaretTagInput))]
 [JsonSerializable(typeof(AddFileVariables))]
 [JsonSerializable(typeof(AddFileData))]
@@ -214,6 +215,7 @@ public static partial class GraphQLOperations
                   configuration {
                     plantUmlFiles
                     outputPath
+                    language
                   }
                 }
                 """,
@@ -329,6 +331,14 @@ public enum LogSeverity
     WARNING,
     ERROR,
     CRITICAL,
+}
+
+public enum StateSmithLanguage
+{
+    C99,
+    CSharp,
+    JavaScript,
+    Java,
 }
 
 public class CaretTagInput
@@ -466,6 +476,10 @@ public class GetConfiguration
 
     [JsonPropertyName("outputPath")]
     public required string OutputPath { get; set; }
+
+    [JsonConverter(typeof(JsonStringEnumConverter<StateSmithLanguage>))]
+    [JsonPropertyName("language")]
+    public required StateSmithLanguage Language { get; set; }
 }
 
 public class GetFileContentsData
