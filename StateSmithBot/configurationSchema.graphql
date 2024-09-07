@@ -7,8 +7,8 @@
 # inserted in the query root type, so that this bot can access its configuration values.
 type Configuration {
     """
-    It's best to add documentation strings for your fields, because they are displayed
-    when codegen.bot prompts the bot user for each value.
+    A list of file paths or patterns like **/*.plantuml that match PlantUML files
     """
+    plantUmlFiles: [String!]!
     outputPath: String!
 }

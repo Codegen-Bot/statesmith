@@ -1,5 +1,6 @@
 query GetConfiguration() {
     configuration {
+        plantUmlFiles
         outputPath
     }
 }
