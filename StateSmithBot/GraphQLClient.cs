@@ -216,6 +216,7 @@ public static partial class GraphQLOperations
                     plantUmlFiles
                     outputPath
                     language
+                    generateSimulation
                   }
                 }
                 """,
@@ -480,6 +481,9 @@ public class GetConfiguration
     [JsonConverter(typeof(JsonStringEnumConverter<StateSmithLanguage>))]
     [JsonPropertyName("language")]
     public required StateSmithLanguage Language { get; set; }
+
+    [JsonPropertyName("generateSimulation")]
+    public bool? GenerateSimulation { get; set; }
 }
 
 public class GetFileContentsData
