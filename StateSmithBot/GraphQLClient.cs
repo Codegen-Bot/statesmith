@@ -212,6 +212,7 @@ public static partial class GraphQLOperations
             Query = """
                 query GetConfiguration {
                   configuration {
+                    plantUmlFiles
                     outputPath
                   }
                 }
@@ -460,6 +461,9 @@ public class GetConfigurationVariables { }
 
 public class GetConfiguration
 {
+    [JsonPropertyName("plantUmlFiles")]
+    public List<string>? PlantUmlFiles { get; set; }
+
     [JsonPropertyName("outputPath")]
     public required string OutputPath { get; set; }
 }
