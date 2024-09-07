@@ -24,7 +24,7 @@ public class PlantUMLToNodesEdges
 
     public void ParseDiagramFile(string filepath)
     {
-        var text = File.ReadAllText(filepath);
+        var text = CustomFile.ReadAllText(filepath);
         ParseDiagramText(text);
     }
 

@@ -18,7 +18,7 @@ public class DrawIoToSmDiagramConverter
 
     public void ProcessFile(string filePath)
     {
-        using StreamReader fileReader = File.OpenText(filePath);
+        using var fileReader = CustomFile.OpenText(filePath);
 
         if (filePath.EndsWith(".svg", System.StringComparison.OrdinalIgnoreCase))
         {

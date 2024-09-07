@@ -2,5 +2,7 @@ query GetConfiguration() {
     configuration {
         plantUmlFiles
         outputPath
+        language
+        generateSimulation
     }
 }

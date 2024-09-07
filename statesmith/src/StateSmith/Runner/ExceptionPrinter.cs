@@ -23,7 +23,7 @@ public class ExceptionPrinter
     {
         StringBuilder sb = new();
         BuildExceptionDetails(sb, exception, additionalDetail: true);
-        File.WriteAllText(filePath, sb.ToString());
+        CustomFile.WriteAllText(filePath, sb.ToString());
     }
 
     public void PrintException(System.Exception exception)

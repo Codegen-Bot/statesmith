@@ -73,7 +73,7 @@ public class GilAlgoCodeGen : ICodeGenRunner
     {
         string gilOutputPath = $"{outputInfo.OutputDirectory}{sm.Name}.gil.cs.txt";
 
-        File.WriteAllText(gilOutputPath, gilCode);
+        CustomFile.WriteAllText(gilOutputPath, gilCode);
         consolePrinter.WriteLine($"You can inspect the generated Generic Intermediate Language (GIL) code here: {gilOutputPath}");
     }
 }

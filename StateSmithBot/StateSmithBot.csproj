@@ -17,4 +17,7 @@
     <PackageReference Include="CodegenBot" Version="1.1.0-alpha.89" />
     <PackageReference Include="StateSmith" Version="0.13.2" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\statesmith\src\StateSmith\StateSmith.csproj" />
+  </ItemGroup>
 </Project>

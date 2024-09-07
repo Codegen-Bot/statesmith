@@ -129,7 +129,7 @@ public class InputSmBuilder
     /// </summary>
     public void ConvertPlantUmlFileNodesToVertices(string filepath)
     {
-        var text = File.ReadAllText(filepath);
+        var text = CustomFile.ReadAllText(filepath);
         ConvertPlantUmlTextNodesToVertices(text);
     }
 

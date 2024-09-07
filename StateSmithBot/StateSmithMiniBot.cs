@@ -1,6 +1,9 @@
+using System;
+using System.IO;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
 using Microsoft.Extensions.DependencyInjection;
+using StateSmith;
 using StateSmith.Common;
 using StateSmith.Input;
 using StateSmith.Input.Antlr4;
@@ -19,25 +22,100 @@ public class StateSmithMiniBot : IMiniBot
         var configuration = GraphQLOperations.GetConfiguration().Configuration;
         var files = GraphQLOperations.GetFiles(configuration.PlantUmlFiles, []).Files ?? [];
 
-        var services = new ServiceCollection();
-        services.Add
+        CustomFile.ReadTextFile = path => GraphQLOperations.GetFileContents(path).ReadTextFile;
+        CustomFile.WriteTextFile = (path, contents) => GraphQLOperations.AddFile(path, contents);
+
+        var language = configuration.Language switch
+        {
+            StateSmithLanguage.C99 => TranspilerId.C99,
+            StateSmithLanguage.Java => TranspilerId.Java,
+            StateSmithLanguage.CSharp => TranspilerId.CSharp,
+            StateSmithLanguage.JavaScript => TranspilerId.JavaScript,
+            _ => TranspilerId.CSharp,
+        };
         
         foreach (var file in files)
         {
-            var plantuml = GraphQLOperations.GetFileContents(file.Path)?.ReadTextFile;
+            // var plantuml = GraphQLOperations.GetFileContents(file.Path)?.ReadTextFile;
+            //
+            // if (plantuml is null)
+            // {
+            //     continue;
+            // }
 
-            if (plantuml is null)
+#pragma warning disable CS0219 // Variable is assigned but its value is never used
+            bool diagramRan;
+#pragma warning restore CS0219 // Variable is assigned but its value is never used
+
+            // string diagramLongerPath = $"{_searchDirectory}/{diagramShortPath}";
+            // string diagramAbsolutePath = Path.GetFullPath(diagramLongerPath);
+            string diagramAbsolutePath = file.Path;
+
+            // string? csxAbsPath = _runInfo.FindCsxWithDiagram(diagramAbsolutePath);
+            // if (csxAbsPath != null)
+            // {
+            //     var csxRelativePath = Path.GetRelativePath(_searchDirectory, csxAbsPath);
+            //     if (IsVerbose)
+            //     {
+            //         _runConsole.QuietMarkupLine($"...Skipping diagram `{diagramShortPath}` already run by csx file `{csxRelativePath}`.");
+            //     }
+            //     diagramRan = false;
+            //     return diagramRan;
+            // }
+
+            // _runConsole.AddMildHeader($"Checking diagram: `{diagramShortPath}`");
+            // _runConsole.WriteLine($"Diagram settings: {_diagramOptions.Describe()}");
+            // _runConsole.QuietMarkupLine($"Change detection not implemented yet. Rebuild for diagram. Issue #328.");
+            // TODO: https://github.com/StateSmith/StateSmith/issues/328
+            // Need to actually check something like `_incrementalRunChecker.TestFilePath(absolutePath);`
+            // IncrementalRunChecker.Result runCheck = IncrementalRunChecker.Result.NeedsRunNoInfo;
+            // if (runCheck != IncrementalRunChecker.Result.OkToSkip)
+            // {
+            //     // already basically printed by IncrementalRunChecker
+            //     //_console.WriteLine($"Script or its diagram dependencies have changed. Running script.");
+            // }
+            // else
+            // {
+            //     if (IsRebuild)
+            //     {
+            //         _runConsole.MarkupLine("Would normally skip (file dates look good), but [yellow]rebuild[/] option set.");
+            //     }
+            //     else
+            //     {
+            //         _runConsole.QuietMarkupLine($"Diagram and its dependencies haven't changed. Skipping.");
+            //         diagramRan = false;
+            //         return diagramRan; //!!!!!!!!!!! NOTE the return here.
+            //     }
+            // }
+
+            //string callerFilePath = CurrentDirectory + "/";  // Slash needed for fix of https://github.com/StateSmith/StateSmith/issues/345
+            string callerFilePath = "/";  // Slash needed for fix of https://github.com/StateSmith/StateSmith/issues/345
+            
+            RunnerSettings runnerSettings = new(diagramFile: diagramAbsolutePath, transpilerId: language);
+            runnerSettings.simulation.enableGeneration = !configuration.GenerateSimulation != false; // enabled by default
+            // runnerSettings.propagateExceptions = _runHandlerOptions.PropagateExceptions;
+            // runnerSettings.dumpErrorsToFile = _runHandlerOptions.DumpErrorsToFile;
+
+            // the constructor will attempt to read diagram settings from the diagram file
+            SmRunner smRunner = new(settings: runnerSettings, renderConfig: null, callerFilePath: callerFilePath);
+
+            if (smRunner.PreDiagramBasedSettingsException != null)
             {
-                continue;
+                //_runConsole.ErrorMarkupLine("\nFailed while trying to read diagram for settings.\n");
+                smRunner.PrintAndThrowIfPreDiagramSettingsException();   // need to do this before we check the transpiler ID
+                throw new Exception("Should not get here.");
             }
 
-            InputSmBuilder inputSmBuilder = new(new SmTransformer(), new DiagramToSmConverter(),
-                new NameMangler(), new DrawIoToSmDiagramConverter());
-            inputSmBuilder.ConvertPlantUmlTextNodesToVertices(plantUmlText);
-            inputSmBuilder.FinishRunning();
+            if (runnerSettings.transpilerId == TranspilerId.NotYetSet)
+            {
+                //_runConsole.MarkupLine($"Ignoring diagram as no language specified `--lang` and no transpiler ID found in diagram.");
+                diagramRan = false;
+                // return diagramRan; //!!!!!!!!!!! NOTE the return here.
+            }
 
-            
-            // TODO - do more
+            //_runConsole.WriteLine($"Running diagram: `{diagramShortPath}`");
+            smRunner.Run();
+            diagramRan = true;
         }
     }
     

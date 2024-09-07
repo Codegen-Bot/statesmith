@@ -11,4 +11,13 @@ type Configuration {
     """
     plantUmlFiles: [String!]!
     outputPath: String!
+    language: StateSmithLanguage
+    generateSimulation: Boolean
+}
+
+enum StateSmithLanguage {
+    C99,
+    CSharp,
+    JavaScript,
+    Java,
 }
